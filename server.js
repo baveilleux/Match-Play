@@ -41,6 +41,11 @@ app.post('/summary', (req, res) => {
     res.render('summary', { player1, player2, matchResult });
 });
 
+// Test Route to verify server is running
+app.get('/test', (req, res) => {
+    res.send('Server is working!');
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
