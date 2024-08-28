@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Score Entry</title>
+    <style>
+        /* Make the match status sticky */
+        #match-summary {
+            position: sticky;
+            top: 0;
+            z-index: 1000; /* Ensure it stays above other content */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4">Score Entry</h2>
+        <!-- Match Status Summary -->
+        <div id="match-summary" class="alert alert-info mt-3">
+            <strong>Current Match Status:</strong> <span id="match-status">All square</span>
+        </div>
+
+        <!-- Score Entry Form -->
+        <form id="score-form" action="/summary" method="post">
+            <input type="hidden" name="player1" id="player1">
+            <input type="hidden" name="player2" id="player2">
+
+            <% for (let i = 1; i <= 18; i++) { %>
+                <div class="mb-3" id="hole<%= i %>">
+                    <h4>Hole <%= i %></h4>
+                    <label for="hole<%= i %>player1" class="form-label player1-label"></label>
+                    <input type="number" class="form-control player1-score" id="hole<%= i %>player1" name="hole<%= i %>player1" min="1">
+                    <label for="hole<%= i %>player2" class="form-label player2-label"></label>
+                    <input type="number" class="form-control player2-score" id="hole<%= i %>player2" name="hole<%= i %>player2" min="1">
+                </div>
+            <% } %>
+            <button type="submit" class="btn btn-primary mt-3">Submit Scores</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('score-form');
+            const matchSummary = document.getElementById('match-summary');
+            const matchStatus = document.getElementById('match-status');
+
+            // Extract player names from query parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const player1Name = urlParams.get('player1');
+            const player2Name = urlParams.get('player2');
+
+            // Populate hidden inputs for player names
+            document.getElementById('player1').value = player1Name;
+            document.getElementById('player2').value = player2Name;
+
+            // Update player labels with names
+            document.querySelectorAll('.player1-label').forEach(label => {
+                label.textContent = `${player1Name} Score:`;
+            });
+            document.querySelectorAll('.player2-label').forEach(label => {
+                label.textContent = `${player2Name} Score:`;
+            });
+
+            // Initialize match state
+            let player1Up = 0;
+            let player2Up = 0;
+
+            // Update match status after each score entry
+            form.addEventListener('input', () => {
+                let currentHole = 0;
+                player1Up = 0;
+                player2Up = 0;
+
+                // Calculate match status up to the last filled hole
+                for (let i = 1; i <= 18; i++) {
+                    const player1Score = document.getElementById(`hole${i}player1`).value;
+                    const player2Score = document.getElementById(`hole${i}player2`).value;
+                    if (player1Score && player2Score) {
+                        currentHole = i;
+                        if (parseInt(player1Score) < parseInt(player2Score)) {
+                            player1Up++;
+                        } else if (parseInt(player1Score) > parseInt(player2Score)) {
+                            player2Up++;
+                        }
+                    }
+                }
+
+                // Update match summary
+                let status = 'All square';
+                if (player1Up > player2Up) {
+                    status = `${player1Name} up by ${player1Up - player2Up}`;
+                } else if (player2Up > player1Up) {
+                    status = `${player2Name} up by ${player2Up - player1Up}`;
+                }
+
+                matchStatus.textContent = status;
+
+                // Check if one player has an insurmountable lead
+                if (currentHole > 0) { // Ensure at least one hole is scored before checking
+                    const remainingHoles = 18 - currentHole;
+
+                    if (player1Up > player2Up + remainingHoles) {
+                        alert(`${player1Name} has won the match with an insurmountable lead of ${player1Up - player2Up} points!`);
+                    } else if (player2Up > player1Up + remainingHoles) {
+                        alert(`${player2Name} has won the match with an insurmountable lead of ${player2Up - player1Up} points!`);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
