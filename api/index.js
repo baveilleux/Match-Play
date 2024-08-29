@@ -59,4 +59,4 @@ function calculateMatchResults(scores) {
     return result;
 }
 
-module.exports = app;
+module.exports = app;  // Export the app without starting the server
