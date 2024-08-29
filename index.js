@@ -4,12 +4,17 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+// Set the view engine to EJS
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../views'));
 
+// Correct paths to views and public directories
+app.set('views', path.join(__dirname, '../views'));
 app.use(express.static(path.join(__dirname, '../public')));
+
+// Middleware to parse incoming form data
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// Define your routes
 app.get('/', (req, res) => {
     res.render('index');
 });
