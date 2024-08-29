@@ -1,19 +1,9 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const winston = require('winston');
 const serverless = require('serverless-http');
 
 const app = express();
-
-// Set up Winston logger to log to console
-const logger = winston.createLogger({
-    level: 'info',
-    format: winston.format.json(),
-    transports: [
-        new winston.transports.Console()  // Log to console only
-    ]
-});
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -25,14 +15,27 @@ app.use(express.static(path.join(__dirname, '../public')));
 // Middleware to parse incoming form data
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Example route with logging
+// Define your routes
 app.get('/', (req, res) => {
-    logger.info('Rendering index page');
     res.render('index');
 });
 
+app.get('/new-match', (req, res) => {
+    res.render('new-match');
+});
+
+app.get('/score-entry', (req, res) => {
+    res.render('score-entry');
+});
+
+app.post('/summary', (req, res) => {
+    const { player1, player2, ...scores } = req.body;
+    const matchResult = calculateMatchResults(scores);
+    res.render('summary', { player1, player2, matchResult });
+});
+
+// Error handling middleware
 app.use((err, req, res, next) => {
-    logger.error('An error occurred:', err);
     res.status(500).send('Internal Server Error');
 });
 
