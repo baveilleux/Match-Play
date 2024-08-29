@@ -1,40 +1,42 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const winston = require('winston');
 
 const app = express();
+
+// Set up Winston logger
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+    transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({ filename: 'logs/combined.log' })  // Logs will be saved in 'logs/combined.log'
+    ]
+});
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
 
 // Correct paths to views and public directories
-app.set('views', path.join(__dirname, '../views'));
-app.use(express.static(path.join(__dirname, '../public')));
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware to parse incoming form data
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Define your routes
+// Example route with logging
 app.get('/', (req, res) => {
+    logger.info('Rendering index page');
     res.render('index');
 });
 
-app.get('/new-match', (req, res) => {
-    res.render('new-match');
-});
-
-app.get('/score-entry', (req, res) => {
-    res.render('score-entry');
-});
-
-app.post('/summary', (req, res) => {
-    const { player1, player2, ...scores } = req.body;
-    const matchResult = calculateMatchResults(scores);
-    res.render('summary', { player1, player2, matchResult });
-});
-
-app.get('/test', (req, res) => {
-    res.send('Server is working!');
+app.use((err, req, res, next) => {
+    logger.error('An error occurred:', err);
+    res.status(500).send('Internal Server Error');
 });
 
 function calculateMatchResults(scores) {
