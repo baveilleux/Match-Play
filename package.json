@@ -11,4 +11,5 @@
     "body-parser": "^1.19.0",
     "serverless-http": "^2.7.0",
     "winston": "^3.8.2"
+  }
 }
