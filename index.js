@@ -2,21 +2,8 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const serverless = require('serverless-http');
-const winston = require('winston');
 
 const app = express();
-
-// Set up Winston logger
-const logger = winston.createLogger({
-    level: 'info',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json()
-    ),
-    transports: [
-        new winston.transports.Console(),
-    ]
-});
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
