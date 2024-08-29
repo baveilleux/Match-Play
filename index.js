@@ -1,9 +1,19 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const winston = require('winston');
 const serverless = require('serverless-http');
 
 const app = express();
+
+// Set up Winston logger to log to console
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    transports: [
+        new winston.transports.Console()  // Log to console only
+    ]
+});
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -53,4 +63,4 @@ function calculateMatchResults(scores) {
     return result;
 }
 
-module.exports = app;
+module.exports = serverless(app);  // Export the app wrapped in serverless-http for serverless deployment
