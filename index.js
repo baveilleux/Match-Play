@@ -22,8 +22,8 @@ const logger = winston.createLogger({
 app.set('view engine', 'ejs');
 
 // Correct paths to views and public directories
-app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.set('views', path.join(__dirname, '../views'));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Middleware to parse incoming form data
 app.use(bodyParser.urlencoded({ extended: false }));
