@@ -1,5 +1,3 @@
-npm install serverless-http --save
-
 {
   "name": "match-play",
   "version": "1.0.0",
