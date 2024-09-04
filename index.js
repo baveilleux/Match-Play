@@ -8,8 +8,8 @@ const app = express();
 app.set('view engine', 'ejs');
 
 // Correct paths to views and public directories
-app.set('views', path.join(__dirname, '../views'));
-app.use(express.static(path.join(__dirname, '../public')));
+app.set('views', path.join(__dirname, '../views')); // for api/index.js
+app.use(express.static(path.join(__dirname, '../public'))); // for public files
 
 // Middleware to parse incoming form data
 app.use(bodyParser.urlencoded({ extended: false }));
